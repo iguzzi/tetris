@@ -17,6 +17,8 @@ class Block_Controller(object):
     ShapeNone_index = 0
     CurrentShape_class = 0
     NextShape_class = 0
+    HoldShape_class = 0
+    
 
     # GetNextMove is main function.
     # input
@@ -62,9 +64,33 @@ class Block_Controller(object):
                 EvalValue = self.calcEvaluationValueSample(board)
                 # update best move
                 if EvalValue > LatestEvalValue:
-                    strategy = (direction0, x0, 1, 1)
+                    if str(GameStatus["block_info"]["holdShape"]["index"]) == 'None': #
+                        my_hold = 'y' #
+                    else: #
+                        my_hold = 'n' #
+                    strategy = (direction0, x0, 1, 1, my_hold)
                     LatestEvalValue = EvalValue
-
+        # search with hold block Shape
+        # hold shape info
+        if str(GameStatus["block_info"]["holdShape"]["index"]) != 'None':
+            HoldShapeDirectionRange = GameStatus["block_info"]["holdShape"]["direction_range"]
+            self.HoldShape_class = GameStatus["block_info"]["holdShape"]["class"]
+            # search with hold block Shape
+            for direction0 in HoldShapeDirectionRange:
+                # search with x range
+                x0Min, x0Max = self.getSearchXRange(self.HoldShape_class, direction0)
+                for x0 in range(x0Min, x0Max):
+                    # get board data, as if dropdown block
+                    board = self.getBoard(self.board_backboard, self.HoldShape_class, direction0, x0)
+                    
+                    # evaluate board
+                    EvalValue = self.calcEvaluationValueSample(board)
+                    # update best move
+                    if EvalValue > LatestEvalValue:
+                        my_hold = 'y' #
+                        strategy = (direction0, x0, 1, 1, my_hold)
+                        LatestEvalValue = EvalValue
+        
                 ###test
                 ###for direction1 in NextShapeDirectionRange:
                 ###  x1Min, x1Max = self.getSearchXRange(self.NextShape_class, direction1)
@@ -75,14 +101,16 @@ class Block_Controller(object):
                 ###            strategy = (direction0, x0, 1, 1)
                 ###            LatestEvalValue = EvalValue
         # search best nextMove <--
+            
 
         print("===", datetime.now() - t1)
         nextMove["strategy"]["direction"] = strategy[0]
         nextMove["strategy"]["x"] = strategy[1]
         nextMove["strategy"]["y_operation"] = strategy[2]
         nextMove["strategy"]["y_moveblocknum"] = strategy[3]
+        nextMove["strategy"]["use_hold_function"] = strategy[4] #
         print(nextMove)
-        print("###### SAMPLE CODE ######")
+        print("###### SAMPLE CODE ######", GameStatus["block_info"]["holdShape"]["index"], my_hold)
         return nextMove
 
     def getSearchXRange(self, Shape_class, direction):
