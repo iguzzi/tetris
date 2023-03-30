@@ -235,7 +235,7 @@ class Block_Controller(object):
         #### maxDy
         #maxDy = max(BlockMaxY) - min(BlockMaxY)
         #### maxHeight
-        #maxHeight = max(BlockMaxY) - fullLines
+        maxHeight = max(BlockMaxY) - fullLines
 
         ## statistical data
         #### stdY
@@ -251,6 +251,17 @@ class Block_Controller(object):
 
 
         # calc Evaluation Value
+        if maxHeight < 11:
+            if nHoles <= 2 and fullLines == 1:
+                fullLines = -6
+            elif nHoles <= 1 and fullLines == 2:
+                fullLines = -4
+            elif nHoles <= 1 and fullLines == 3:
+                fullLines = 0
+            if fullLines == 1:
+                fullLines *= 0.3 #
+            elif fullLines == 2:
+                fullLines *= 1.0 #
         score = 0
         score = score + fullLines * my_param.c_fullLines     #10.0          # try to delete line
         score = score - nHoles * my_param.c_nHoles           #1.0
@@ -267,4 +278,3 @@ class Block_Controller(object):
         return score
     
 BLOCK_CONTROLLER = Block_Controller()
-

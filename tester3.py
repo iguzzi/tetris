@@ -9,14 +9,13 @@ with open('./game_manager/my_param.py') as fr:
     param = fr.read()
 
 for i in range(N):
-    #cmd = 'python start.py -m sample -l 2 -d 1 -r ' + str(i)
-    cmd = 'python start.py -l 2 -d 1 -r ' + str(i)
+    cmd = 'python start.py -l 3 -d 1 -r ' + str(i)
     result = subprocess.run(cmd, shell=True)
     with open('./result.json') as f:
         s = json.loads(f.read())
     score[i] = int(s["judge_info"]["score"])
 
-with open('./my_log/0.log', mode='w') as fw:
+with open('./my_log/0.log', mode='a') as fw:
     for i in range(N):
         sw = str(i) + ": " + str(score[i]) + "\n"
         fw.write(sw)
@@ -25,4 +24,3 @@ with open('./my_log/0.log', mode='w') as fw:
     fw.write(sw)
     print("ave: ", sum(score)/len(score))
     fw.write(param)
-
